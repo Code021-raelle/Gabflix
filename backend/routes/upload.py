@@ -2,7 +2,7 @@ import os
 from flask import Blueprint, request, jsonify, send_from_directory
 from flask import current_app as app
 from werkzeug.utils import secure_filename
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import db
 from models import Movie
 
@@ -20,6 +20,12 @@ def allowed_file(filename):
 @upload.route('/upload_movie', methods=['POST'])
 @jwt_required()
 def upload_file():
+    user_id = get_jwt_identity()  # Get the user ID from the JWT token
+    user = User.query.get(user_id)
+
+    if not user or not user.is_admin:
+        return jsonify({'error': 'Admin access required'}), 403
+
     if 'file' not in request.files:
         return jsonify({'error': 'No file part in the request'}), 400
     
