@@ -32,6 +32,9 @@ def upload_file():
 
     title = request.form.get('title')
     description = request.form.get('description')
+    category = request.form.get('category')
+    video_url = request.files.get('video_url')
+    thumbnail_path = request.files.get('thumbnail_path')
 
     if not title or not description:
         return jsonify({'error': 'Title and description are required'}), 400
@@ -52,7 +55,7 @@ def upload_file():
     db = current_app.extensions['sqlalchemy'].db
 
     # Save movie metadata to the database
-    new_movie = Movie(title=title, description=description, video_url=file_path)
+    new_movie = Movie(title=title, description=description, video_url=video_url, thumbnail_path=thumbnail_path, category=category)
     db.session.add(new_movie)
     db.session.commit()
 
