@@ -16,12 +16,14 @@ def create_app():
 
     db.init_app(app)
     jwt.init_app(app)
-    CORS(app)
+    CORS(app, origins=["http://localhost:5173"])
     migrate.init_app(app, db)
 
     from routes.upload import upload
+    from routes.auth import auth
     from models import User, Movie, Test
     app.register_blueprint(upload, url_prefix='/api')
+    app.register_blueprint(auth, url_prefix='/api')
 
 
     @app.route('/')
