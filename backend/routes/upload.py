@@ -1,10 +1,9 @@
 import os
 from flask import Blueprint, request, jsonify, send_from_directory
-from flask import current_app as app
 from werkzeug.utils import secure_filename
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from models import Movie, User
 from app import db
-from models import Movie
 
 upload = Blueprint('upload', __name__)
 
@@ -43,29 +42,31 @@ def upload_file():
     if not allowed_file(file.filename):
         return jsonify({'error': 'File type not allowed'}), 400
     
-    if file and allowed_file(file.filename):
-        # Save the file securely  
-        filename = secure_filename(file.filename)
-        file_path = os.path.join(UPLOAD_FOLDER, filename)
-        file.save(file_path)
+    # Save the file securely  
+    filename = secure_filename(file.filename)
+    file_path = os.path.join(UPLOAD_FOLDER, filename)
+    file.save(file_path)
 
-        # Save movie metadata to the database
-        new_movie = Movie(title=title, description=description, video_url=file_path)
-        db.session.add(new_movie)
-        db.session.commit()
+    # Use `current_app.extensions["sqlalchemy"].db` to get db
+    from flask import current_app
+    db = current_app.extensions['sqlalchemy'].db
 
-        return jsonify({
-            'message': 'Movie uploaded and saved successfully',
-            'movie': {
-                'id': new_movie.id,
-                'title': new_movie.title,
-                'description': new_movie.description,
-                'video_url': new_movie.video_url
-            }
-        }), 201
+    # Save movie metadata to the database
+    new_movie = Movie(title=title, description=description, video_url=file_path)
+    db.session.add(new_movie)
+    db.session.commit()
+
+    return jsonify({
+        'message': 'Movie uploaded and saved successfully',
+        'movie': {
+            'id': new_movie.id,
+            'title': new_movie.title,
+            'description': new_movie.description,
+            'video_url': new_movie.video_url
+        }
+    }), 201
     
-    return jsonify({'error': 'File upload failed'}), 500
 
-@app.route('/uploads/<filename>')
+@upload.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
