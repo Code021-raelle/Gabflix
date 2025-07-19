@@ -25,6 +25,8 @@ class Movie(db.Model):
     release_year = db.Column(db.Integer, nullable=False)
     genre = db.Column(db.String(50), nullable=False)
     video_url = db.Column(db.String(255), nullable=True)
+    thumbnail_path = db.Column(db.String(255), nullable=True)
+    category = db.Column(db.String(50), nullable=True)
 
 class Test(db.Model):
     id = db.Column(db.Integer, primary_key=True)
