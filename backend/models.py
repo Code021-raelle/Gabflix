@@ -1,4 +1,6 @@
 from app import db
+from sqlalchemy.orm import relationship
+from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -8,6 +10,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
+    profiles = db.relationship('Profile', back_populates='user', cascade='all, delete')
 
     def set_password(self, password):
         """Set the password hash for the user."""
@@ -28,6 +31,13 @@ class Movie(db.Model):
     thumbnail_path = db.Column(db.String(255), nullable=True)
     category = db.Column(db.String(50), nullable=True)
 
-class Test(db.Model):
+
+class Profile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50))
+    name = db.Column(db.String(120), nullable=False)
+    avatar = db.Column(db.String(255), nullable=True, default='default_avatar.png')
+    pin = db.Column(db.String(4), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship("User", back_populates="profiles")
