@@ -21,9 +21,11 @@ def create_app():
 
     from routes.upload import upload
     from routes.auth import auth
-    from models import User, Movie, Test
+    from routes.profile import profile
+    from models import User, Movie, Profile
     app.register_blueprint(upload, url_prefix='/api')
     app.register_blueprint(auth, url_prefix='/api')
+    app.register_blueprint(profile, url_prefix='/api')
 
 
     @app.route('/')
