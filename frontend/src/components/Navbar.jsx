@@ -19,7 +19,10 @@ export default function Navbar() {
                 <Link to="/tv-shows" className="text-white hover:text-red-500">TV Shows</Link>
                 <Link to="/about" className="text-white hover:text-red-500">About</Link>
                 {token ? (
-                    <button onClick={handleLogout} className="text-white hover:text-red-500">Logout</button>
+                    <>
+                        <Link to="/upload" className="hover:underline">Upload</Link>
+                        <button onClick={handleLogout} className="text-white hover:text-red-500">Logout</button>
+                    </>
                 ) : (
                     <>
                         <Link to="/login" className="text-white hover:text-red-500">Login</Link>
