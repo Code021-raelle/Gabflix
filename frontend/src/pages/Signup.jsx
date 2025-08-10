@@ -9,7 +9,7 @@ export default function Signup() {
 
     const handleSignup = async () => {
         try {
-            await api.post('/register', { username, password });
+            await api.post('/register', { email, password });
             navigate('/login');
         } catch (err) {
             alert(err.response?.data?.message || 'Signup failed');
